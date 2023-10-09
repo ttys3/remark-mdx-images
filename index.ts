@@ -26,7 +26,7 @@ const relativePathPattern = /\.\.?\//;
  */
 const remarkMdxImages: Plugin<[RemarkMdxImagesOptions?], Root> =
   ({ resolve = true } = {}) =>
-  (ast, file) => {
+  (ast, file: any) => {
     const imports: MdxjsEsm[] = [];
     const imported = new Map<string, string>();
 
