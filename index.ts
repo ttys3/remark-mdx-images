@@ -3,6 +3,8 @@ import { MdxjsEsm, MdxJsxTextElement } from 'mdast-util-mdx';
 import { Plugin } from 'unified';
 import { visit } from 'unist-util-visit';
 
+import { dirname, resolve, basename, extname, join, sep } from 'path';
+
 export interface RemarkMdxImagesOptions {
   /**
    * By default imports are resolved relative to the markdown file. This matches default markdown
@@ -24,7 +26,7 @@ const relativePathPattern = /\.\.?\//;
  */
 const remarkMdxImages: Plugin<[RemarkMdxImagesOptions?], Root> =
   ({ resolve = true } = {}) =>
-  (ast) => {
+  (ast, file) => {
     const imports: MdxjsEsm[] = [];
     const imported = new Map<string, string>();
 
@@ -34,7 +36,18 @@ const remarkMdxImages: Plugin<[RemarkMdxImagesOptions?], Root> =
         return;
       }
       if (!relativePathPattern.test(url) && resolve) {
-        url = `./${url}`;
+        // url = `./${url}`;
+
+        url = './' + [
+          'data',
+          file?.data?.rawDocumentData?.sourceFileDir,
+          url,
+        ].join('/')
+
+        // new url: './data/blog/hugo/rename-hugo-blog-git-repo-branch-from-master-to-main/github-set-dft-branch-to-main.png', 
+        // cwd: '/home/ttys3/repo/blog/ttys3.dev', dirname: '/home/ttys3/repo/blog/ttys3.dev', 
+        // path: '/home/ttys3/repo/blog/ttys3.dev/_mdx_bundler_entry_point-691a69a2-2bfc-404a-99ad-24f209e4e8fc.mdx'
+        // console.log('new url: %o, cwd: %o, dirname: %o, path: %o', url, file.cwd, file.dirname, file.path)
       }
 
       let name = imported.get(url);
