@@ -85,6 +85,7 @@ const remarkMdxImages: Plugin<[RemarkMdxImagesOptions?], Root> =
         children: [],
         attributes: [
           { type: 'mdxJsxAttribute', name: 'alt', value: alt },
+          { type: 'mdxJsxAttribute', name: 'data-source-path', value: url },
           {
             type: 'mdxJsxAttribute',
             name: 'src',
