@@ -2,6 +2,7 @@ import { Image, Parent, Root } from 'mdast';
 import { MdxjsEsm, MdxJsxTextElement } from 'mdast-util-mdx';
 import { Plugin } from 'unified';
 import { visit } from 'unist-util-visit';
+import { VFile, Data } from 'vfile';
 
 import { dirname, resolve, basename, extname, join, sep } from 'path';
 
@@ -17,6 +18,19 @@ export interface RemarkMdxImagesOptions {
   resolve?: boolean;
 }
 
+
+// copy from https://github.com/contentlayerdev/contentlayer/blob/2f491c540e1d3667577f57fa368b150bff427aaf/packages/%40contentlayer/core/src/data-types.ts#L14
+export type RawDocumentData = Record<string, any>
+
+// VFile after addRawDocumentToVFile https://github.com/contentlayerdev/contentlayer/blob/2f491c540e1d3667577f57fa368b150bff427aaf/packages/%40contentlayer/core/src/markdown/unified.ts#L10C8-L10C8
+// orig VFile is https://github.com/vfile/vfile/blob/f06864271a7e76a43a01199102e5f2ab585972b9/lib/index.js#L13C11-L13C11
+type contentlayerVFile = VFile & {
+  data: Data & {
+    rawDocumentData: RawDocumentData
+  }
+}
+
+
 // eslint-disable-next-line unicorn/no-unsafe-regex
 const urlPattern = /^(https?:)?\//;
 const relativePathPattern = /\.\.?\//;
@@ -26,7 +40,8 @@ const relativePathPattern = /\.\.?\//;
  */
 const remarkMdxImages: Plugin<[RemarkMdxImagesOptions?], Root> =
   ({ resolve = true } = {}) =>
-  (ast, file: any) => {
+  // https://github.com/vfile/vfile/blob/f06864271a7e76a43a01199102e5f2ab585972b9/lib/index.js#L98
+  (ast: Parent, file: VFile) => {
     const imports: MdxjsEsm[] = [];
     const imported = new Map<string, string>();
 
@@ -38,9 +53,10 @@ const remarkMdxImages: Plugin<[RemarkMdxImagesOptions?], Root> =
       if (!relativePathPattern.test(url) && resolve) {
         // url = `./${url}`;
 
+        const fileContentlayer = file as contentlayerVFile
         url = './' + [
           'data',
-          file?.data?.rawDocumentData?.sourceFileDir,
+          fileContentlayer.data?.rawDocumentData?.sourceFileDir,
           url,
         ].join('/')
 

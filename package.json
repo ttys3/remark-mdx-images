@@ -37,7 +37,8 @@
   "dependencies": {
     "@types/mdast": "^3.0.0",
     "unified": "^10.0.0",
-    "unist-util-visit": "^4.0.0"
+    "unist-util-visit": "^4.0.0",
+    "vfile": "^5.3.7"
   },
   "devDependencies": {
     "@mdx-js/mdx": "^2.0.0",
