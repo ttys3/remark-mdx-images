@@ -22,7 +22,7 @@ for (const name of tests) {
       jsx: true,
     });
     const prettierConfig = await prettier.resolveConfig(expected.pathname);
-    const output = prettier.format(
+    const output = await prettier.format(
       String(result),
       { ...prettierConfig, filepath: expected.pathname }!,
     );
